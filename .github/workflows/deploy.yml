@@ -67,7 +67,7 @@ jobs:
         run: |
           echo "aws_account_id=${{ needs.terraform.outputs.aws_account_id }}" >> $GITHUB_ENV
           echo "ecs_repo_name=${{ needs.terraform.outputs.ecs_repo_name }}" >> $GITHUB_ENV
-          echo "ECR_REPO_URI=$aws_account_id.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/$ecs_repo_name" >> $GITHUB_ENV 
+          echo "ECR_REPO_URI=$aws_account_id.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ needs.terraform.outputs.ecs_repo_name }}" >> $GITHUB_ENV 
           echo "aws_region=${{ secrets.AWS_REGION }}" >> $GITHUB_ENV
           echo "vpc_id=${{ needs.terraform.outputs.vpc_id }}" >> $GITHUB_ENV
 
@@ -75,7 +75,7 @@ jobs:
         run: |
           echo "Using ECR URI: $ECR_REPO_URI"
           echo "vpc_id: $vpc_id"
-          echo "aws_account_id: $aws_account_id"
+          echo "aws_account_id: ${{ needs.terraform.outputs.aws_account_id }}"
           echo "ecs_repo_name: $ecs_repo_name"
 
       - name: Checkout Code
