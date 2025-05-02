@@ -7,15 +7,16 @@ resource "aws_efs_file_system" "mongodb-efs" {
   }
 }
 
-# efs access point 
-resource "aws_efs_access_point" "mongodb-efs-access-point" {
-  file_system_id = aws_efs_file_system.mongodb-efs.id
-#   root_directory {
-#     creation_info {
-#       owner_uid   = "1000"
-#       owner_gid   = "1000"
-#       permissions = 770
-#     }
-#     path = "/"
-#   }
+# Mount target us-east1a
+resource "aws_efs_mount_target" "efs-mtarget-a" {
+  file_system_id  = aws_efs_file_system.mongodb-efs.id
+  subnet_id       = aws_subnet.public_subet_a.id
+  security_groups = [aws_security_group.efs-sg.id]
+}
+
+# Mount target us-east1b
+resource "aws_efs_mount_target" "efs-mtarget-b" {
+  file_system_id  = aws_efs_file_system.mongodb-efs.id
+  subnet_id       = aws_subnet.public_subet_b.id
+  security_groups = [aws_security_group.efs-sg.id]
 }

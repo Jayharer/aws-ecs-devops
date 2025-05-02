@@ -25,3 +25,25 @@ resource "aws_iam_role_policy_attachment" "ecsTaskExecutionRole_policy" {
   role       = aws_iam_role.ecsTaskExecutionRole.name
 }
 
+resource "aws_iam_policy" "ecs_task_policy" {
+  name        = "ALBControllerIAMPolicy"
+  description = "IAM policy for AWS Load Balancer Controller"
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "logs:CreateLogGroup"
+        ],
+        "Resource" : "*"
+      }
+    ]
+    }
+  )
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_task_extra_policy" {
+  policy_arn = aws_iam_policy.ecs_task_policy.arn
+  role       = aws_iam_role.ecsTaskExecutionRole.name
+}

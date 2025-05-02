@@ -16,13 +16,16 @@ resource "aws_ecs_task_definition" "ecs_project" {
       essential = true
       portMappings = [
         {
-          containerPort = 3000
-          hostPort      = 3000
+          containerPort = 27017
+          hostPort      = 27017
         }
       ]
       environment = [
         { "name" : "MONGO_INITDB_ROOT_USERNAME", "value" : "mongoadmin" },
         { "name" : "MONGO_INITDB_ROOT_PASSWORD", "value" : "secret" },
+      ]
+      mountPoints = [
+        { "containerPath" : "/data/db", "sourceVolume" : "efs-mongo-storage" }
       ]
     },
     {
@@ -33,16 +36,25 @@ resource "aws_ecs_task_definition" "ecs_project" {
       essential = true
       portMappings = [
         {
-          containerPort = 27017
-          hostPort      = 27017
+          containerPort = 3000
+          hostPort      = 3000
         }
       ]
       environment = [
         { "name" : "MONGO_USER", "value" : "mongoadmin" },
         { "name" : "MONGO_PASSWORD", "value" : "secret" },
-        { "name" : "MONGO_IP", "value" : "mongodb" },
+        { "name" : "MONGO_IP", "value" : "localhost" },
         { "name" : "MONGO_PORT", "value" : "27017" },
       ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-create-group  = "true"
+          awslogs-group         = "/ecs/myapp"
+          awslogs-region        = "us-east-1"
+          awslogs-stream-prefix = "ecs"
+        }
+      }
     }
   ])
 
@@ -58,13 +70,11 @@ resource "aws_ecs_task_definition" "ecs_project" {
       file_system_id          = aws_efs_file_system.mongodb-efs.id
       root_directory          = "/"
       transit_encryption      = "ENABLED"
-      transit_encryption_port = 2999
-      authorization_config {
-        access_point_id = aws_efs_access_point.mongodb-efs-access-point.id
-        iam             = "ENABLED"
-      }
+      transit_encryption_port = 2049
     }
   }
 
+
   depends_on = [aws_ecr_repository.dev_ecr_repo, aws_iam_role.ecsTaskExecutionRole]
 }
+
