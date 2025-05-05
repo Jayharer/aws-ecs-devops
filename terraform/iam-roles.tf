@@ -34,7 +34,11 @@ resource "aws_iam_policy" "ecs_task_policy" {
       {
         "Effect" : "Allow",
         "Action" : [
-          "logs:CreateLogGroup"
+          "logs:CreateLogGroup",
+          "logs:PutLogEvents",
+          "logs:CreateLogStream",
+          "ecr:GetAuthorizationToken",
+          "ecr:BatchGetImage"
         ],
         "Resource" : "*"
       }

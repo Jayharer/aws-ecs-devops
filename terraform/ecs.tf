@@ -25,8 +25,15 @@ resource "aws_ecs_service" "app-service" {
     assign_public_ip = "true"
   }
 
-  depends_on = [aws_iam_role.ecsTaskExecutionRole,
-  aws_ecs_task_definition.ecs_project, aws_ecs_cluster.ecs_cluster]
+  load_balancer {
+    target_group_arn = aws_lb_target_group.ecs-tg.arn
+    container_name   = "myapp"
+    container_port   = 3000
+  }
+
+  depends_on = [ aws_iam_role.ecsTaskExecutionRole,
+  aws_ecs_task_definition.ecs_project, aws_ecs_cluster.ecs_cluster, 
+  aws_lb_listener.ecs-alb-listener]
 
 }
 
